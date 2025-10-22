@@ -1,9 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antiq</title>
+<meta name="generator" content="Geany 2.1" />
+</head>
+
+<body>
+	
+	<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Antiq</title>
+  <title>Calculadora de Fechas / Intervalos</title>
   <style>
     body {
       font-family: Arial, sans‑serif;
@@ -13,56 +23,70 @@
       display: block;
       margin: 0.5rem 0;
     }
-    #result {
+    .section {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #ccc;
+    }
+    #result1, #result2 {
       margin-top: 1rem;
       font‑weight: bold;
     }
   </style>
 </head>
 <body>
-	
 
-  <h1>Calcular la antiguedad en el INTERVALO</h1>
+  <h1>Calculadora 1: Intervalo entre dos fechas</h1>
 
-  <label for="startDate">Fecha de inicio & hora:</label>
-  <input type="datetime-local" id="startDate">
+  <label for="startDate1">Fecha inicio:</label>
+  <input type="datetime-local" id="startDate1">
+  <label for="endDate1">Fecha fin:</label>
+  <input type="datetime-local" id="endDate1">
+  <button id="calcBtn1">Calcular intervalo</button>
+  <div id="result1">Introduce las fechas y pulsa calcular.</div>
 
-  <label for="endDate">Fecha de término & hora:</label>
-  <input type="datetime-local" id="endDate">
+  <div class="section">
+    <h1>Calculadora 2: Superposición entre dos períodos</h1>
 
-  <button id="calcBtn">Calcular</button>
+    <label for="startA">Periodo A – Fecha inicio:</label>
+    <input type="datetime-local" id="startA">
+    <label for="endA">Periodo A – Fecha fin:</label>
+    <input type="datetime-local" id="endA">
 
+    <label for="startB">Periodo B – Fecha inicio:</label>
+    <input type="datetime-local" id="startB">
+    <label for="endB">Periodo B – Fecha fin:</label>
+    <input type="datetime-local" id="endB">
+
+    <button id="calcBtn2">Calcular superposición</button>
+    <div id="result2">Introduce los dos periodos y pulsa calcular.</div>
+  </div>
 
   <script>
     function diffDates(dateA, dateB) {
       const A = new Date(dateA);
       const B = new Date(dateB);
       if (isNaN(A) || isNaN(B)) {
-        return { error: "Invalid date(s)" };
+        return { error: "Fecha(s) inválida(s)" };
       }
       if (B < A) {
-        return { error: "End date must be after start date" };
+        return { error: "La fecha fin debe ser posterior a la fecha inicio" };
       }
-      let years   = B.getFullYear()    - A.getFullYear();
-      let months  = B.getMonth()       - A.getMonth();
-      let days    = B.getDate()        - A.getDate();
-      let hours   = B.getHours()       - A.getHours();
 
-      // adjust hours if negative
+      let years  = B.getFullYear() - A.getFullYear();
+      let months = B.getMonth()     - A.getMonth();
+      let days   = B.getDate()      - A.getDate();
+      let hours  = B.getHours()     - A.getHours();
+
       if (hours < 0) {
         hours += 24;
         days  -= 1;
       }
-
-      // adjust days if negative
       if (days < 0) {
-        // get number of days in previous month of B
         const prevMonth = new Date(B.getFullYear(), B.getMonth(), 0);
         days += prevMonth.getDate();
         months -= 1;
       }
-
-      // adjust months if negative
       if (months < 0) {
         months += 12;
         years  -= 1;
@@ -71,27 +95,63 @@
       return { years, months, days, hours };
     }
 
-    document.getElementById("calcBtn").addEventListener("click", () => {
-      const start = document.getElementById("startDate").value;
-      const end   = document.getElementById("endDate").value;
-
-      const resultDiv = document.getElementById("result");
-      const diff = diffDates(start, end);
+    document.getElementById("calcBtn1").addEventListener("click", () => {
+      const start = document.getElementById("startDate1").value;
+      const end   = document.getElementById("endDate1").value;
+      const resDiv = document.getElementById("result1");
+      const diff   = diffDates(start, end);
 
       if (diff.error) {
-        resultDiv.textContent = diff.error;
+        resDiv.textContent = diff.error;
       } else {
-        resultDiv.textContent = 
-          `${diff.years} year(s), ` +
-          `${diff.months} month(s), ` +
-          `${diff.days} day(s)
+        resDiv.textContent = 
+          `${diff.years} año(s), ${diff.months} mes(es), ` +
+          `${diff.days} día(s), ${diff.hours} hora(s)`;
+      }
+    });
+
+    document.getElementById("calcBtn2").addEventListener("click", () => {
+      const sA = new Date(document.getElementById("startA").value);
+      const eA = new Date(document.getElementById("endA").value);
+      const sB = new Date(document.getElementById("startB").value);
+      const eB = new Date(document.getElementById("endB").value);
+      const resDiv2 = document.getElementById("result2");
+
+      if (isNaN(sA) || isNaN(eA) || isNaN(sB) || isNaN(eB)) {
+        resDiv2.textContent = "Por favor introduce fechas válidas en todos los campos.";
+        return;
+      }
+      if (eA < sA || eB < sB) {
+        resDiv2.textContent = "En cada periodo la fecha fin debe ser posterior a la fecha de inicio.";
+        return;
+      }
+
+      // Calcular intersección
+      const overlapStart = new Date(Math.max(sA.getTime(), sB.getTime()));
+      const overlapEnd   = new Date(Math.min(eA.getTime(), eB.getTime()));
+
+      if (overlapEnd < overlapStart) {
+        resDiv2.textContent = "No hay superposición entre los periodos.";
+      } else {
+        const diff = diffDates(overlapStart.toISOString(), overlapEnd.toISOString());
+        if (diff.error) {
+          resDiv2.textContent = diff.error;
+        } else {
+          resDiv2.textContent = 
+            `Superposición: ${diff.years} año(s), ${diff.months} mes(es), ` +
+            `${diff.days} día(s), ${diff.hours} hora(s)`;
+        }
       }
     });
   </script>
   
-  <br><br>
-  @HRBC 2025<br>
-  CBTA 205
+  <br><br><br><br><br><br><br>
+  @HRBC<br>
+  Aguascalientes
 
 </body>
+</html>
+
+</body>
+
 </html>
