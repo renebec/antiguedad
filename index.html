@@ -76,6 +76,28 @@
     <button id="calcBtn3">Calcular desde inicio de A hasta inicio de superposición</button>
     <div id="result3">Introduce los dos periodos y pulsa calcular.</div>
   </div>
+  
+   
+   <div class="section">
+    <h1>Calculadora 4: Período A menos Período B</h1>
+
+    <label for="startA4">Periodo A – Fecha inicio:</label>
+    <input type="datetime-local" id="startA4">
+    <label for="endA4">Periodo A – Fecha fin:</label>
+    <input type="datetime-local" id="endA4">
+    <br><br>
+    <label for="startB4">Periodo B – Fecha inicio:</label>
+    <input type="datetime-local" id="startB4">
+    <label for="endB4">Periodo B – Fecha fin:</label>
+    <input type="datetime-local" id="endB4">
+    <br><br>
+    <button id="calcBtn4">Calcular (A − B)</button>
+    <div id="result4" style="font-weight:bold;color:rgb(100,100,180)">Introduce los dos periodos y pulsa calcular.</div>
+  </div>
+  
+  
+  
+  
 
   <script>
     function diffDates(dateA, dateB) {
@@ -192,6 +214,68 @@
             `Desde inicio de A (${document.getElementById("startA3").value}) hasta inicio de superposición (${overlapStart.toISOString()}): ` +
             `${diff.years} año(s), ${diff.months} mes(es), ${diff.days} día(s), ${diff.hours} hora(s)`;
         }
+      }
+    });
+    
+     // Calculadora 4: Período A menos Período B
+    document.getElementById("calcBtn4").addEventListener("click", () => {
+      const sA = new Date(document.getElementById("startA4").value);
+      const eA = new Date(document.getElementById("endA4").value);
+      const sB = new Date(document.getElementById("startB4").value);
+      const eB = new Date(document.getElementById("endB4").value);
+      const resDiv4 = document.getElementById("result4");
+
+      if (isNaN(sA) || isNaN(eA) || isNaN(sB) || isNaN(eB)) {
+        resDiv4.textContent = "Por favor introduce fechas válidas en todos los campos.";
+        return;
+      }
+      if (eA < sA || eB < sB) {
+        resDiv4.textContent = "En cada periodo la fecha fin debe ser posterior al inicio.";
+        return;
+      }
+
+      // Calculamos la duración de A
+      const diffA = diffDates(sA.toISOString(), eA.toISOString());
+      if (diffA.error) {
+        resDiv4.textContent = "Error en Periodo A: " + diffA.error;
+        return;
+      }
+
+      // Calculamos la duración de B
+      const diffB = diffDates(sB.toISOString(), eB.toISOString());
+      if (diffB.error) {
+        resDiv4.textContent = "Error en Periodo B: " + diffB.error;
+        return;
+      }
+
+      // Restar B de A
+      let years  = diffA.years  - diffB.years;
+      let months = diffA.months - diffB.months;
+      let days   = diffA.days   - diffB.days;
+      let hours  = diffA.hours  - diffB.hours;
+
+      // Ajustes si negativo
+      if (hours < 0) {
+        hours += 24;
+        days  -= 1;
+      }
+      if (days < 0) {
+        // calcular días del mes anterior al eA
+        const prevMonth = new Date(eA.getFullYear(), eA.getMonth(), 0);
+        days += prevMonth.getDate();
+        months -= 1;
+      }
+      if (months < 0) {
+        months += 12;
+        years  -= 1;
+      }
+
+      if (years < 0) {
+        resDiv4.textContent = "La duración de B es mayor que la de A. Resultado negativo.";
+      } else {
+        resDiv4.textContent =
+          `Resultado (A − B): ${years} año(s), ${months} mes(es), `+
+          `${days} día(s), ${hours} hora(s)`;
       }
     });
 
