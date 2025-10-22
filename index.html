@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cslcular antiguedad en el período</title>
+  <style>
+    body {
+      font-family: Arial, sans‑serif;
+      margin: 2rem;
+    }
+    label, input, button {
+      display: block;
+      margin: 0.5rem 0;
+    }
+    #result {
+      margin-top: 1rem;
+      font‑weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Calcular la antiguedad en el intervalo</h1>
+
+  <label for="startDate">Start date & time:</label>
+  <input type="datetime-local" id="startDate">
+
+  <label for="endDate">End date & time:</label>
+  <input type="datetime-local" id="endDate">
+
+  <button id="calcBtn">Calculate</button>
+
+  <div id="result">Enter the dates and click calculate.</div>
+
+  <script>
+    function diffDates(dateA, dateB) {
+      const A = new Date(dateA);
+      const B = new Date(dateB);
+      if (isNaN(A) || isNaN(B)) {
+        return { error: "Invalid date(s)" };
+      }
+      if (B < A) {
+        return { error: "End date must be after start date" };
+      }
+      let years   = B.getFullYear()    - A.getFullYear();
+      let months  = B.getMonth()       - A.getMonth();
+      let days    = B.getDate()        - A.getDate();
+      let hours   = B.getHours()       - A.getHours();
+
+      // adjust hours if negative
+      if (hours < 0) {
+        hours += 24;
+        days  -= 1;
+      }
+
+      // adjust days if negative
+      if (days < 0) {
+        // get number of days in previous month of B
+        const prevMonth = new Date(B.getFullYear(), B.getMonth(), 0);
+        days += prevMonth.getDate();
+        months -= 1;
+      }
+
+      // adjust months if negative
+      if (months < 0) {
+        months += 12;
+        years  -= 1;
+      }
+
+      return { years, months, days, hours };
+    }
+
+    document.getElementById("calcBtn").addEventListener("click", () => {
+      const start = document.getElementById("startDate").value;
+      const end   = document.getElementById("endDate").value;
+
+      const resultDiv = document.getElementById("result");
+      const diff = diffDates(start, end);
+
+      if (diff.error) {
+        resultDiv.textContent = diff.error;
+      } else {
+        resultDiv.textContent = 
+          `${diff.years} year(s), ` +
+          `${diff.months} month(s), ` +
+          `${diff.days} day(s), ` +
+          `${diff.hours} hour(s)`;
+      }
+    });
+  </script>
+
+</body>
+</html>
