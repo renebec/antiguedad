@@ -1,22 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Antiq</title>
-<meta name="generator" content="Geany 2.1" />
-</head>
-
-<body>
-	
-	<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Calculadora de Fechas / Intervalos</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antiq</title>
+  <meta name="generator" content="Geany 2.1" />
   <style>
     body {
-      font-family: Arial, sans‑serif;
+      font‑family: Arial, sans‑serif;
       margin: 2rem;
     }
     label, input, button {
@@ -28,12 +19,17 @@
       padding-top: 1rem;
       border-top: 1px solid #ccc;
     }
-    #result1, #result2 {
+    #result1, #result2, #result3 {
       margin-top: 1rem;
       font‑weight: bold;
     }
+    /* Colores específicos según tus estilos originales */
+    #result1 { color: rgb(20,180,20); }
+    #result2 { color: rgb(180,20,20); }
+    #result3 { color: rgb(20,20,180); } /* ejemplo nuevo color para calculadora 3 */
   </style>
 </head>
+
 <body>
 
   <h1>Calculadora 1: Intervalo entre dos fechas</h1>
@@ -43,23 +39,42 @@
   <label for="endDate1">Fecha fin:</label>
   <input type="datetime-local" id="endDate1">
   <button id="calcBtn1">Calcular intervalo</button>
-  <div id="result1" style="font-weight:bold;color:rgb(20,180,20)">Introduce las fechas y pulsa calcular.</div>
-<br><br><br>
-  <div class="section">
-    <h1>Calculadora 2: Superposición entre dos períodos</h1>
+  <div id="result1">Introduce las fechas y pulsa calcular.</div>
 
-    <label for="startA">Periodo A – Fecha inicio:</label>
-    <input type="datetime-local" id="startA">
-    <label for="endA">Periodo A – Fecha fin:</label>
-    <input type="datetime-local" id="endA">
-<br><br>
-    <label for="startB">Periodo B – Fecha inicio:</label>
-    <input type="datetime-local" id="startB">
-    <label for="endB">Periodo B – Fecha fin:</label>
-    <input type="datetime-local" id="endB">
-<br><br>
+  <br><br><br>
+
+  <div class="section">
+    <h1>Calculadora 2: Superposición entre dos periodos</h1>
+
+    <label for="startA2">Periodo A – Fecha inicio:</label>
+    <input type="datetime-local" id="startA2">
+    <label for="endA2">Periodo A – Fecha fin:</label>
+    <input type="datetime-local" id="endA2">
+    <br><br>
+    <label for="startB2">Periodo B – Fecha inicio:</label>
+    <input type="datetime-local" id="startB2">
+    <label for="endB2">Periodo B – Fecha fin:</label>
+    <input type="datetime-local" id="endB2">
+    <br><br>
     <button id="calcBtn2">Calcular superposición</button>
-    <div id="result2" style="font-weight:bold;color:rgb(180,20,20)">Introduce los dos periodos y pulsa calcular.</div>
+    <div id="result2">Introduce los dos periodos y pulsa calcular.</div>
+  </div>
+
+  <div class="section">
+    <h1>Calculadora 3: Desde inicio de A hasta inicio de la superposición</h1>
+
+    <label for="startA3">Periodo A – Fecha inicio:</label>
+    <input type="datetime-local" id="startA3">
+    <label for="endA3">Periodo A – Fecha fin:</label>
+    <input type="datetime-local" id="endA3">
+    <br><br>
+    <label for="startB3">Periodo B – Fecha inicio:</label>
+    <input type="datetime-local" id="startB3">
+    <label for="endB3">Periodo B – Fecha fin:</label>
+    <input type="datetime-local" id="endB3">
+    <br><br>
+    <button id="calcBtn3">Calcular desde inicio de A hasta inicio de superposición</button>
+    <div id="result3">Introduce los dos periodos y pulsa calcular.</div>
   </div>
 
   <script>
@@ -74,9 +89,9 @@
       }
 
       let years  = B.getFullYear() - A.getFullYear();
-      let months = B.getMonth()     - A.getMonth();
-      let days   = B.getDate()      - A.getDate();
-      let hours  = B.getHours()     - A.getHours();
+      let months = B.getMonth()    - A.getMonth();
+      let days   = B.getDate()     - A.getDate();
+      let hours  = B.getHours()    - A.getHours();
 
       if (hours < 0) {
         hours += 24;
@@ -95,6 +110,7 @@
       return { years, months, days, hours };
     }
 
+    // Calculadora 1
     document.getElementById("calcBtn1").addEventListener("click", () => {
       const start = document.getElementById("startDate1").value;
       const end   = document.getElementById("endDate1").value;
@@ -110,11 +126,12 @@
       }
     });
 
+    // Calculadora 2
     document.getElementById("calcBtn2").addEventListener("click", () => {
-      const sA = new Date(document.getElementById("startA").value);
-      const eA = new Date(document.getElementById("endA").value);
-      const sB = new Date(document.getElementById("startB").value);
-      const eB = new Date(document.getElementById("endB").value);
+      const sA = new Date(document.getElementById("startA2").value);
+      const eA = new Date(document.getElementById("endA2").value);
+      const sB = new Date(document.getElementById("startB2").value);
+      const eB = new Date(document.getElementById("endB2").value);
       const resDiv2 = document.getElementById("result2");
 
       if (isNaN(sA) || isNaN(eA) || isNaN(sB) || isNaN(eB)) {
@@ -122,11 +139,10 @@
         return;
       }
       if (eA < sA || eB < sB) {
-        resDiv2.textContent = "En cada periodo la fecha fin debe ser posterior a la fecha de inicio.";
+        resDiv2.textContent = "En cada periodo la fecha fin debe ser posterior al inicio.";
         return;
       }
 
-      // Calcular intersección
       const overlapStart = new Date(Math.max(sA.getTime(), sB.getTime()));
       const overlapEnd   = new Date(Math.min(eA.getTime(), eB.getTime()));
 
@@ -143,15 +159,47 @@
         }
       }
     });
+
+    // Calculadora 3
+    document.getElementById("calcBtn3").addEventListener("click", () => {
+      const sA = new Date(document.getElementById("startA3").value);
+      const eA = new Date(document.getElementById("endA3").value);
+      const sB = new Date(document.getElementById("startB3").value);
+      const eB = new Date(document.getElementById("endB3").value);
+      const resDiv3 = document.getElementById("result3");
+
+      if (isNaN(sA) || isNaN(eA) || isNaN(sB) || isNaN(eB)) {
+        resDiv3.textContent = "Por favor introduce fechas válidas en todos los campos.";
+        return;
+      }
+      if (eA < sA || eB < sB) {
+        resDiv3.textContent = "En cada periodo la fecha fin debe ser posterior al inicio.";
+        return;
+      }
+
+      const overlapStart = new Date(Math.max(sA.getTime(), sB.getTime()));
+      const overlapEnd   = new Date(Math.min(eA.getTime(), eB.getTime()));
+
+      if (overlapEnd < overlapStart) {
+        resDiv3.textContent = "No hay superposición entre los periodos → no aplica.";
+      } else {
+        // intervalo desde inicio de A hasta inicio de superposición
+        const diff = diffDates(sA.toISOString(), overlapStart.toISOString());
+        if (diff.error) {
+          resDiv3.textContent = diff.error;
+        } else {
+          resDiv3.textContent = 
+            `Desde inicio de A (${document.getElementById("startA3").value}) hasta inicio de superposición (${overlapStart.toISOString()}): ` +
+            `${diff.years} año(s), ${diff.months} mes(es), ${diff.days} día(s), ${diff.hours} hora(s)`;
+        }
+      }
+    });
+
   </script>
-  
+
   <br><br><br><br><br><br><br>
   @HRBC<br>
   Aguascalientes
 
 </body>
-</html>
-
-</body>
-
 </html>
